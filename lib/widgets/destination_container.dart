@@ -65,7 +65,6 @@ class DestinationList extends StatelessWidget {
   }
 }
 
-
 class DestinationContainer extends StatefulWidget {
   
   final Destination destinationRecord;
@@ -88,11 +87,12 @@ class _DestinationContainerState extends State<DestinationContainer> {
       var imageUint8List = await photoRef.child(destinationRecord.wallpaperUrl).getData(maxSize);
       requestedWallpaper.add(destinationRecord.wallpaperUrl);
       imageData.putIfAbsent(destinationRecord.wallpaperUrl, () {
-        return imageUint8List;
+        return Image.memory(imageUint8List, fit: BoxFit.cover, height: 260, width: 280,);
       });
       return imageUint8List;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +148,7 @@ class _DestinationContainerState extends State<DestinationContainer> {
                     tag: imageData[widget.destinationRecord.wallpaperUrl],
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20.0),
-                      child: Image.memory(imageData[widget.destinationRecord.wallpaperUrl], fit: BoxFit.cover, height: 260, width: 280,),
+                      child: imageData[widget.destinationRecord.wallpaperUrl],
                     ),
                   ) :
                   FutureBuilder(
@@ -161,7 +161,7 @@ class _DestinationContainerState extends State<DestinationContainer> {
                           tag: snapShot.data,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20.0),
-                            child: Image.memory(snapShot.data, fit: BoxFit.cover, height: 260, width: 280,),
+                            child: imageData[widget.destinationRecord.wallpaperUrl],
                           ),
                         );
                       }
