@@ -1,10 +1,11 @@
 
 
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:trips/models/photos_model.dart';
 
 class Destination
 {
-  String destinationImgUrl;
   String city;
   String country;
   String description;
@@ -13,6 +14,10 @@ class Destination
   String storagePath;
   String wallpaperUrl;
   List<dynamic> images;
+  Uint8List wallPaperImage;
+  List<Photo> photos;
+  Map<dynamic, Photo> mappedPhotos;
+
   final DocumentReference reference;
 
   Destination.fromMap(Map<String, dynamic> map, {this.reference}) :
@@ -22,7 +27,9 @@ class Destination
     wallpaperUrl = map.containsKey('wallpaperUrl') ? map['wallpaperUrl'] : '',
     images = map.containsKey('images') ? map['images'] : new List<dynamic>(),
     visitedDate = map.containsKey('visitedDate') ? map['visitedDate'] : new Timestamp(0, 0),
-    description = map.containsKey('description') ? map['description'] : '';
+    description = map.containsKey('description') ? map['description'] : '',
+    photos = new List<Photo>(),
+    mappedPhotos = {};
 
 
   Destination.fromSnapshot(DocumentSnapshot snapshot)

@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:trips/models/data_holder.dart';
 import 'package:trips/models/destinationModel.dart';
 import 'package:trips/screens/add_trips.dart';
+import 'package:trips/screens/destination_tab_screen.dart';
 
 class DestinationList extends StatelessWidget {
  
@@ -81,14 +82,16 @@ class _DestinationContainerState extends State<DestinationContainer> {
 
   Future _getWallpaper(StorageReference photoRef, Destination destinationRecord) async
   {
+    Uint8List imageUint8List;
     if(destinationRecord.wallpaperUrl != null && destinationRecord.wallpaperUrl.isEmpty == false)
     {
       int maxSize = 17*1024*1024;
-      var imageUint8List = await photoRef.child(destinationRecord.wallpaperUrl).getData(maxSize);
+      imageUint8List = await photoRef.child(destinationRecord.wallpaperUrl).getData(maxSize);
       requestedWallpaper.add(destinationRecord.wallpaperUrl);
       imageData.putIfAbsent(destinationRecord.wallpaperUrl, () {
         return Image.memory(imageUint8List, fit: BoxFit.cover, height: 260, width: 280,);
       });
+      destinationRecord.wallPaperImage = imageUint8List;
       return imageUint8List;
     }
   }
@@ -100,7 +103,12 @@ class _DestinationContainerState extends State<DestinationContainer> {
     StorageReference wallpaperReference = photosReference.child('wallpaper');
     return GestureDetector(
       onTap: () {
-        
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DestinationTabScreen(destination: widget.destinationRecord)
+          )
+        );
       },
       child: Container(
         margin: EdgeInsets.all(10.0),
@@ -171,6 +179,7 @@ class _DestinationContainerState extends State<DestinationContainer> {
                       }
                     },
                   ),
+                  imageData.containsKey(widget.destinationRecord.wallpaperUrl) ?
                   Positioned(
                       bottom: 10.0,
                       left: 10.0,
@@ -193,7 +202,9 @@ class _DestinationContainerState extends State<DestinationContainer> {
                           )
                         ],
                       ),
-                    )
+                    ) 
+                    :
+                    Container(width: 0, height: 0,),
                 ],
               ),
             )

@@ -78,6 +78,7 @@ class _AddTripState extends State<AddTrip>
                     onSaved: (value) => _addTripData.description = value,
                   ),
                   _DatePicker(onDateChanged: _handleDateChanged),
+                  
                   RaisedButton(
                     onPressed: getWallPaperImage,
                     child: _image == null ? Text('Select image') :
