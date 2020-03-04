@@ -221,7 +221,8 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
                         {
                           return gridView;
                         }
-                        return CircularProgressIndicator();
+                        return Container(
+                          child: CircularProgressIndicator(backgroundColor: Colors.white70,));
                       },
                     )
                   ],
@@ -234,7 +235,6 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
     );
   }
 }
-
 
 class GalleryPhotoViewWrapper extends StatefulWidget {
   GalleryPhotoViewWrapper({
@@ -296,9 +296,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                 return PhotoViewGalleryPageOptions(
                       minScale: PhotoViewComputedScale.contained * 0.9,
                       maxScale: PhotoViewComputedScale.covered * 4,
-                      imageProvider: Image.memory(photo.imgUrl).image,
+                      imageProvider: Image.memory(photo.imgUrl,fit: BoxFit.fitWidth,).image,
                       initialScale: PhotoViewComputedScale.contained * 0.9,
-                      basePosition: Alignment.centerLeft,
+                      basePosition: Alignment.center,
                       heroAttributes: PhotoViewHeroAttributes(tag:photo.imgUrl));
               },
               itemCount: widget.galleryItems.length,
@@ -314,3 +314,82 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     );
   }
 }
+
+
+// class GalleryPhotoViewWrapper extends StatefulWidget {
+//   GalleryPhotoViewWrapper({
+//     this.loadingChild,
+//     this.backgroundDecoration,
+//     this.minScale,
+//     this.maxScale,
+//     this.initialIndex,
+//     @required this.galleryItems,
+//     this.scrollDirection = Axis.horizontal,
+//   }) : pageController = PageController(initialPage: initialIndex, viewportFraction: 1.0, keepPage: true);
+
+//   final Widget loadingChild;
+//   final Decoration backgroundDecoration;
+//   final dynamic minScale;
+//   final dynamic maxScale;
+//   final int initialIndex;
+//   final PageController pageController;
+//   final List<Photo> galleryItems;
+//   final Axis scrollDirection;
+
+//   @override
+//   State<StatefulWidget> createState() {
+//     return _GalleryPhotoViewWrapperState();
+//   }
+// }
+
+// class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
+//   int currentIndex;
+
+//   @override
+//   void initState() {
+//     currentIndex = widget.initialIndex;
+//     super.initState();
+//   }
+
+//   void onPageChanged(int index) {
+//     setState(() {
+//       currentIndex = index;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Container(
+//         decoration: widget.backgroundDecoration,
+//         constraints: BoxConstraints.expand(
+//           height: MediaQuery.of(context).size.height,
+//         ),
+//         child: Stack(
+//           alignment: Alignment.bottomRight,
+//           children: <Widget>[
+//             PhotoViewGallery.builder(
+//               scrollPhysics: ScrollPhysics(),
+//               builder: (BuildContext context, int index)
+//               {
+//                 Photo photo = widget.galleryItems[index];
+//                 return PhotoViewGalleryPageOptions(
+//                       minScale: PhotoViewComputedScale.contained * 0.9,
+//                       maxScale: PhotoViewComputedScale.covered * 4,
+//                       imageProvider: Image.memory(photo.imgUrl).image,
+//                       initialScale: PhotoViewComputedScale.contained * 0.9,
+//                       basePosition: Alignment.centerLeft,
+//                       heroAttributes: PhotoViewHeroAttributes(tag:photo.imgUrl));
+//               },
+//               itemCount: widget.galleryItems.length,
+//               backgroundDecoration: widget.backgroundDecoration,
+//               pageController: widget.pageController,
+//               onPageChanged: onPageChanged,
+//               scrollDirection: widget.scrollDirection,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
