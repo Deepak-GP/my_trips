@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:trips/models/destinationModel.dart';
@@ -21,6 +22,23 @@ class DestinationTabScreen extends StatefulWidget {
 class _DestinationTabScreenState extends State<DestinationTabScreen> with TickerProviderStateMixin{
   TabController tabController;
   TabBar tabBarItem;
+
+   _addImages() async
+  {
+    print('Inside getImages');
+    var imageList = await MultiImagePicker.pickImages(maxImages: 10, enableCamera: true);
+    print('Before adding images lenght is ${widget.destination.photos.length}');
+    List<dynamic> newImages = List<dynamic>();
+    for(Asset imageFile in imageList)
+    {
+      newImages.add(imageFile.name);
+      var byteData = await imageFile.getByteData(quality: 100);
+      widget.destination.photos.add(new Photo(imgUrl: byteData.buffer.asUint8List()));
+    }
+    setState(() {
+      print('After adding images lenght is ${widget.destination.photos.length}');
+    });
+  }
 
   Future _getImages() async{
     StorageReference photosReference = FirebaseStorage.instance.ref().child(widget.destination.city);
@@ -58,12 +76,6 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
       controller: tabController,
       indicatorColor: Colors.red,
     );
-
-    // StorageReference photosReference = FirebaseStorage.instance.ref().child(widget.destination.city);
-    // for (var imageUrl in widget.destination.images) {
-    //   _getImage(photosReference, imageUrl);
-    // }
-
   }
 
   void open(BuildContext context, int index)
@@ -231,6 +243,11 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
             )
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _addImages,
+          child: Icon(Icons.add),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }
@@ -314,82 +331,3 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     );
   }
 }
-
-
-// class GalleryPhotoViewWrapper extends StatefulWidget {
-//   GalleryPhotoViewWrapper({
-//     this.loadingChild,
-//     this.backgroundDecoration,
-//     this.minScale,
-//     this.maxScale,
-//     this.initialIndex,
-//     @required this.galleryItems,
-//     this.scrollDirection = Axis.horizontal,
-//   }) : pageController = PageController(initialPage: initialIndex, viewportFraction: 1.0, keepPage: true);
-
-//   final Widget loadingChild;
-//   final Decoration backgroundDecoration;
-//   final dynamic minScale;
-//   final dynamic maxScale;
-//   final int initialIndex;
-//   final PageController pageController;
-//   final List<Photo> galleryItems;
-//   final Axis scrollDirection;
-
-//   @override
-//   State<StatefulWidget> createState() {
-//     return _GalleryPhotoViewWrapperState();
-//   }
-// }
-
-// class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
-//   int currentIndex;
-
-//   @override
-//   void initState() {
-//     currentIndex = widget.initialIndex;
-//     super.initState();
-//   }
-
-//   void onPageChanged(int index) {
-//     setState(() {
-//       currentIndex = index;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Container(
-//         decoration: widget.backgroundDecoration,
-//         constraints: BoxConstraints.expand(
-//           height: MediaQuery.of(context).size.height,
-//         ),
-//         child: Stack(
-//           alignment: Alignment.bottomRight,
-//           children: <Widget>[
-//             PhotoViewGallery.builder(
-//               scrollPhysics: ScrollPhysics(),
-//               builder: (BuildContext context, int index)
-//               {
-//                 Photo photo = widget.galleryItems[index];
-//                 return PhotoViewGalleryPageOptions(
-//                       minScale: PhotoViewComputedScale.contained * 0.9,
-//                       maxScale: PhotoViewComputedScale.covered * 4,
-//                       imageProvider: Image.memory(photo.imgUrl).image,
-//                       initialScale: PhotoViewComputedScale.contained * 0.9,
-//                       basePosition: Alignment.centerLeft,
-//                       heroAttributes: PhotoViewHeroAttributes(tag:photo.imgUrl));
-//               },
-//               itemCount: widget.galleryItems.length,
-//               backgroundDecoration: widget.backgroundDecoration,
-//               pageController: widget.pageController,
-//               onPageChanged: onPageChanged,
-//               scrollDirection: widget.scrollDirection,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
