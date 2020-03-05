@@ -1,12 +1,14 @@
 
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:trips/models/data_holder.dart';
 import 'package:trips/models/destinationModel.dart';
 import 'package:trips/models/photos_model.dart';
 
@@ -23,18 +25,52 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
   TabController tabController;
   TabBar tabBarItem;
 
+  _updateImagesList(List<dynamic> newImageList) async
+  {
+    for(var image in widget.destination.images)
+    {
+      newImageList.add(image);
+    }
+
+    var document = Firestore.instance.collection('Destinations').document(widget.destination.reference.documentID);
+    document.updateData({
+      'images': newImageList
+    }).then((value) => print('Success')).catchError((error) => print('Error : $error'));
+  }
+
+  _addNewImagesToStorage(Map<String, Uint8List> newImagesMap) async
+  {
+    var storageReference = FirebaseStorage.instance.ref().child(widget.destination.city);
+    for(var key in newImagesMap.keys)
+    {
+      var imageStorageReference = storageReference.child(key);
+      StorageUploadTask storageUloadTask = imageStorageReference.putData(newImagesMap[key]);
+      await storageUloadTask.onComplete.then((StorageTaskSnapshot value) => print('${value.error}')).catchError((error) => print('Error while uploading $error'));
+    }
+  }
+
    _addImages() async
   {
     print('Inside getImages');
     var imageList = await MultiImagePicker.pickImages(maxImages: 10, enableCamera: true);
     print('Before adding images lenght is ${widget.destination.photos.length}');
+    Map<String, Uint8List> newImagesMap = Map<String, Uint8List>();
     List<dynamic> newImages = List<dynamic>();
     for(Asset imageFile in imageList)
     {
       newImages.add(imageFile.name);
       var byteData = await imageFile.getByteData(quality: 100);
+      newImagesMap.putIfAbsent(imageFile.name, () => byteData.buffer.asUint8List());
       widget.destination.photos.add(new Photo(imgUrl: byteData.buffer.asUint8List()));
+      
     }
+    
+    await _addNewImagesToStorage(newImagesMap);
+
+    await _updateImagesList(newImages);
+
+    widget.destination.wallpaperMap.clear();
+
     setState(() {
       print('After adding images lenght is ${widget.destination.photos.length}');
     });
@@ -169,7 +205,8 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
                   tag: widget.destination.wallpaperUrl,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30.0),
-                    child: Image(
+                    child: widget.destination.wallPaperImage == null ? Container(width: 100, height: 100, color: Colors.red,) :
+                    Image(
                       image: Image.memory(widget.destination.wallPaperImage).image,
                       fit: BoxFit.cover,
                     ),

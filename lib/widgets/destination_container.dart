@@ -56,6 +56,7 @@ class DestinationList extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemBuilder: (BuildContext context, int index)
               {
+                print('Creating new Objects');
                 var destinationRecord = Destination.fromSnapshot(snapshot[index]);
                 return DestinationContainer(destinationRecord: destinationRecord,);
               },
@@ -87,8 +88,7 @@ class _DestinationContainerState extends State<DestinationContainer> {
     {
       int maxSize = 17*1024*1024;
       imageUint8List = await photoRef.child(destinationRecord.wallpaperUrl).getData(maxSize);
-      requestedWallpaper.add(destinationRecord.wallpaperUrl);
-      imageData.putIfAbsent(destinationRecord.wallpaperUrl, () {
+      destinationRecord.wallpaperMap.putIfAbsent(destinationRecord.wallpaperUrl, () {
         return Image.memory(imageUint8List, fit: BoxFit.cover, height: 260, width: 280,);
       });
       destinationRecord.wallPaperImage = imageUint8List;
@@ -152,11 +152,12 @@ class _DestinationContainerState extends State<DestinationContainer> {
               ),
               child: Stack(
                 children: <Widget>[
-                  imageData.containsKey(widget.destinationRecord.wallpaperUrl) ? Hero(
-                    tag: imageData[widget.destinationRecord.wallpaperUrl],
+                  widget.destinationRecord.wallpaperMap.containsKey(widget.destinationRecord.wallpaperUrl) ? 
+                  Hero(
+                    tag: widget.destinationRecord.wallpaperUrl,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20.0),
-                      child: imageData[widget.destinationRecord.wallpaperUrl],
+                      child: widget.destinationRecord.wallpaperMap[widget.destinationRecord.wallpaperUrl],
                     ),
                   ) :
                   FutureBuilder(
@@ -169,7 +170,7 @@ class _DestinationContainerState extends State<DestinationContainer> {
                           tag: snapShot.data,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20.0),
-                            child: imageData[widget.destinationRecord.wallpaperUrl],
+                            child: widget.destinationRecord.wallpaperMap[widget.destinationRecord.wallpaperUrl],
                           ),
                         );
                       }
@@ -179,7 +180,7 @@ class _DestinationContainerState extends State<DestinationContainer> {
                       }
                     },
                   ),
-                  imageData.containsKey(widget.destinationRecord.wallpaperUrl) ?
+                  widget.destinationRecord.wallpaperMap.containsKey(widget.destinationRecord.wallpaperUrl) ?
                   Positioned(
                       bottom: 10.0,
                       left: 10.0,

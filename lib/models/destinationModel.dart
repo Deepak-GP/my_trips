@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:trips/models/photos_model.dart';
 
 class Destination
@@ -17,6 +18,7 @@ class Destination
   Uint8List wallPaperImage;
   List<Photo> photos;
   Map<dynamic, Photo> mappedPhotos;
+  Map<String,Image> wallpaperMap;
 
   final DocumentReference reference;
 
@@ -29,6 +31,7 @@ class Destination
     visitedDate = map.containsKey('visitedDate') ? map['visitedDate'] : new Timestamp(0, 0),
     description = map.containsKey('description') ? map['description'] : '',
     photos = new List<Photo>(),
+    wallpaperMap = {},
     mappedPhotos = {};
 
 
