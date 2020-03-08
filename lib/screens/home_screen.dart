@@ -2,6 +2,9 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trips/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:trips/blocs/authentication_bloc/authentication_event.dart';
 import 'package:trips/widgets/destination_container.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,13 +45,26 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.symmetric(vertical: 35.0),
           children: <Widget>[
-            Text(
-              'Trips travelled',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 40.0
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  'Trips travelled',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 40.0
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    BlocProvider.of<AuthenticationBloc>(context).add(
+                      LoggedOut(),
+                    );
+                  },
+                )
+              ],
             ),
             SizedBox(height: 30.0),
             _destinationCarousel(),
