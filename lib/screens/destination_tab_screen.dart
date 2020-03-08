@@ -8,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:trips/models/data_holder.dart';
 import 'package:trips/models/destinationModel.dart';
 import 'package:trips/models/photos_model.dart';
 
@@ -58,6 +57,7 @@ class _DestinationTabScreenState extends State<DestinationTabScreen> with Ticker
     List<dynamic> newImages = List<dynamic>();
     for(Asset imageFile in imageList)
     {
+      
       newImages.add(imageFile.name);
       var byteData = await imageFile.getByteData(quality: 100);
       newImagesMap.putIfAbsent(imageFile.name, () => byteData.buffer.asUint8List());
@@ -356,7 +356,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                       heroAttributes: PhotoViewHeroAttributes(tag:photo.imgUrl));
               },
               itemCount: widget.galleryItems.length,
-              loadingChild: widget.loadingChild,
+              loadingBuilder: (BuildContext context, ImageChunkEvent imageChunckEvent){
+                return widget.loadingChild;
+              },
               backgroundDecoration: widget.backgroundDecoration,
               pageController: widget.pageController,
               onPageChanged: onPageChanged,

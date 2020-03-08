@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:trips/models/add_trip_form.dart';
+import 'package:trips/utils/validators.dart';
 
 
 class AddTrip extends StatefulWidget
@@ -21,7 +22,6 @@ class _AddTripState extends State<AddTrip>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   AddTripFormData _addTripData = AddTripFormData();
-  BuildContext _scaffoldContext;
   File _image;
 
   Future getWallPaperImage() async {
@@ -43,7 +43,6 @@ class _AddTripState extends State<AddTrip>
       body: Builder(
         builder: (context)
         {
-          _scaffoldContext = context;
           return Padding(
             padding: EdgeInsets.all(20.0),
             child: Form(
@@ -56,6 +55,7 @@ class _AddTripState extends State<AddTrip>
                     decoration: InputDecoration(
                       hintText: 'City',
                     ),
+                    validator: composeValidators('city',[requiredValidator]),
                     onSaved: (value) => _addTripData.city = value,
                   ),
                   TextFormField(
@@ -63,18 +63,14 @@ class _AddTripState extends State<AddTrip>
                     decoration: InputDecoration(
                       hintText: 'Country',
                     ),
+                    validator: composeValidators('country',[requiredValidator]),
                     onSaved: (value) => _addTripData.country = value,
                   ),
-                  // TextFormField(
-                  //   decoration: InputDecoration(
-                  //     hintText: 'Trip wallpaper',
-                  //   ),
-                  //   onSaved: (value) => _addTripData.destinationImgUrl = value,
-                  // ),
                   TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Short Description',
                     ),
+                    validator: composeValidators('description',[requiredValidator]),
                     onSaved: (value) => _addTripData.description = value,
                   ),
                   _DatePicker(onDateChanged: _handleDateChanged),
@@ -103,19 +99,7 @@ class _AddTripState extends State<AddTrip>
 
   void _handleSuccess(data)
   {
-    // Navigator
-    //     .pushNamedAndRemoveUntil(context, '/', 
-    //                             (Route<dynamic> route) => false, 
-    //                             arguments: HomeScreen()
-    //                             );
     Navigator.pop(context);
-  }
-
-  void _handleError(response)
-  {
-    Scaffold.of(_scaffoldContext).showSnackBar(SnackBar(
-        content: Text(response['errors']['message'])
-      ));
   }
 
   void _register() async
