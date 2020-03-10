@@ -21,8 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _destinationCarousel()
   {
-    print('Building HomeScreen');
-
     return StreamBuilder<QuerySnapshot>(
       stream: destinationsDatabaseRef.collection('Destinations').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
@@ -31,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
         else
         {
-          //return _destinationList(context, snapshot.data.documents);
           return DestinationList(snapshot: snapshot.data.documents,);
         }
       },
